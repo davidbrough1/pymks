@@ -58,30 +58,41 @@ class Filter(object):
     def _sum(self, Fy):
         return np.sum(Fy, axis=-1)
 
-    def resize(self, size):
+    def resize(self, scale_factor):
         """
         Changes the size of the kernel to size.
 
         Args:
-          size: tuple with the shape of the new kernel
+          scale_factor: integer indicates the integer multiple that the
+            influence coff will be scaled up to.
         """
+
+        if not isinstance(scale_factor, int):
+            raise RuntimeError("scale_factor must be an integer")
+        size = scale_factor * np.array(self.Fkernel.shape)[1:-1]
         if len(size) != len(self.Fkernel.shape[1:-1]):
             raise RuntimeError("length of resize shape is incorrect.")
         if not np.all(size >= self.Fkernel.shape[1:-1]):
             raise RuntimeError("resize shape is too small.")
+        if issubclass(self._frequency_2_real().dtype.type, np.complex):
+            raise RuntimeError("influence cofficients must be real")
 
-        kernel = self._frequency_2_real()
-        size = kernel.shape[:1] + size + kernel.shape[-1:]
-        padsize = np.array(size) - np.array(kernel.shape)
+        size = self.Fkernel.shape[:1] + tuple(size) + self.Fkernel.shape[-1:]
+        padsize = np.array(size) - np.array(self.Fkernel.shape)
         paddown = padsize // 2
         padup = padsize - paddown
         padarray = np.concatenate((padup[..., None],
                                    paddown[..., None]), axis=1)
         pads = tuple([tuple(p) for p in padarray])
-        kernel_pad = np.pad(kernel, pads, 'constant', constant_values=0)
-        Fkernel_pad = self._real_2_frequency(kernel_pad)
+        #print self.Fkernel
+        Fkernel_pad = np.pad(np.fft.fftshift(self.Fkernel, axes=self.axes),
+                             pads, 'constant', constant_values=0)
 
-        self.Fkernel = Fkernel_pad
+        #print Fkernel_pad
+        #Fkernel_pad = self._real_2_frequency(kernel_pad)
+
+        self.Fkernel = scale_factor * np.fft.ifftshift(Fkernel_pad,
+                                                       axes=self.axes)
 
 
 class Correlation(Filter):
