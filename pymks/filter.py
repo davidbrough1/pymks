@@ -78,21 +78,24 @@ class Filter(object):
             raise RuntimeError("influence cofficients must be real")
 
         size = self.Fkernel.shape[:1] + tuple(size) + self.Fkernel.shape[-1:]
+        #k0_index = len(size) * (:,)
+        #k0 = self.Fkernel[k0_index]
         padsize = np.array(size) - np.array(self.Fkernel.shape)
         paddown = padsize // 2
         padup = padsize - paddown
         padarray = np.concatenate((padup[..., None],
                                    paddown[..., None]), axis=1)
         pads = tuple([tuple(p) for p in padarray])
-        #print self.Fkernel
         Fkernel_pad = np.pad(np.fft.fftshift(self.Fkernel, axes=self.axes),
                              pads, 'constant', constant_values=0)
 
         #print Fkernel_pad
         #Fkernel_pad = self._real_2_frequency(kernel_pad)
 
-        self.Fkernel = scale_factor * np.fft.ifftshift(Fkernel_pad,
-                                                       axes=self.axes)
+        Fkernel_pad = np.fft.ifftshift(Fkernel_pad,
+                                                      axes=self.axes)
+        #Fkernel_pad[k0_index] = k0
+        self.Fkernel = Fkernel_pad
 
 
 class Correlation(Filter):
