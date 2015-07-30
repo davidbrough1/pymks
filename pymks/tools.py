@@ -290,7 +290,10 @@ def _draw_fields(fields, field_cmap, fontsize, titles):
             raise RuntimeError(
                 "number of plots does not match number of labels.")
     plt.close('all')
-    fig, axs = plt.subplots(1, n_fields, figsize=(n_fields * 4, 4))
+    if n_fields != 4:
+        fig, axs = plt.subplots(1, n_fields, figsize=(n_fields * 4, 4))
+    else:
+        fig, axs = plt.subplots(2, 2, figsize=(8, 8))
     if n_fields > 1:
         for field, ax, title in zip(fields, axs.flat, titles):
             im = ax.imshow(field.swapaxes(0, 1),
@@ -305,13 +308,17 @@ def _draw_fields(fields, field_cmap, fontsize, titles):
         axs.set_xticks(())
         axs.set_yticks(())
         axs.set_title(titles[0], fontsize=fontsize)
-    fig.subplots_adjust(right=0.8)
+    if n_fields != 4:
+        fig.subplots_adjust(right=0.8)
+    else:
+        fig.subplots_adjust(right=0.8, bottom=0.2)
     cbar_ax = fig.add_axes([1.0, 0.05, 0.05, 0.9])
     cbar_font = np.floor(0.8 * fontsize)
     cbar_ax.tick_params(labelsize=cbar_font)
     cbar_ax.yaxis.set_offset_position('right')
     fig.colorbar(im, cax=cbar_ax)
     plt.tight_layout()
+    # plt.subplots_adjust(left=0.125)
     plt.rc('font', **{'size': str(cbar_font)})
     plt.show()
 
@@ -358,13 +365,13 @@ def draw_gridscores(grid_scores, param, score_label=None, colors=None,
         mins.append(min(_mins))
         maxes.append(max(_maxes))
     if data_labels[0] is not None:
-        plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,
-                   fontsize=15)
+        plt.legend(loc=1, borderaxespad=0.,
+                   fontsize=16)
     _min, _max = min(mins), max(maxes)
     y_epsilon = (_max - _min) * 0.05
-    plt.ylim((_min - y_epsilon, _max + y_epsilon))
+    plt.ylim((_min - y_epsilon, _max + y_epsilon * 3))
     plt.ticklabel_format(style='sci', axis='y')
-    plt.ylabel(score_label, fontsize=fontsize)
+    plt.ylabel(score_label, fontsize=25)
     plt.xlabel(param_label, fontsize=fontsize)
     plt.show()
 
