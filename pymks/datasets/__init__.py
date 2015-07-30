@@ -178,7 +178,11 @@ def make_cahn_hilliard(n_samples=1, size=(21, 21), dx=0.25, width=1.,
     """
     CHsim = CahnHilliardSimulation(dx=dx, dt=dt, gamma=width ** 2)
 
-    X0 = 2 * np.random.random((n_samples,) + size) - 1
+    # X0 = 4 * np.random.random((n_samples,) + size) - 2
+    X0 = np.random.normal(0, 1e-2, ((n_samples,) + size))
+    for ii in range(1, n_samples):
+        mean = 0.4 * np.random.random(1) - 0.2
+        X0[ii] = np.random.normal(mean, 1e-2, size)
     X = X0.copy()
     for ii in range(n_steps):
         CHsim.run(X)
