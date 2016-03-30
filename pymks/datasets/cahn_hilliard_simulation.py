@@ -1,7 +1,8 @@
 import numpy as np
+from ..bases.imag_ffts import _ImagFFTBasis
 
 
-class CahnHilliardSimulation(object):
+class CahnHilliardSimulation(_ImagFFTBasis):
     r"""
     Solve the `Cahn-Hilliard equation
     <https://en.wikipedia.org/wiki/Cahn-Hilliard_equation>`__ for
@@ -63,23 +64,26 @@ class CahnHilliardSimulation(object):
 
     def __init__(self, dx=0.25, gamma=1., dt=0.001):
         r"""
+        Instanitate a CahnHilliardSimulation
+
         Args:
-          dx: grid spacing
-          dt: time step size
-          gamma: paramater in CH equation
+            dx (float, optional): grid spacing
+            dt (float, optional): time step size
+            gamma (float, optional): paramater in CH equation
 
         """
         self.dx = dx
         self.dt = dt
         self.gamma = gamma
+        super(CahnHilliardSimulation, self).__init__()
 
     def run(self, X):
         r"""
         Return the response field
 
         Args:
-          X: Array representing the concentration field between -1 and
-             1 with shape (n_samples, N, N)
+            X (ND array): Array representing the concentration field between -1
+                and 1 with shape (n_samples, n_x, ...)
 
         """
         N = X.shape[1]
@@ -87,8 +91,8 @@ class CahnHilliardSimulation(object):
             raise RuntimeError("X must represent a square domain")
 
         L = self.dx * N
-        k = np.arange(N) 
-        
+        k = np.arange(N)
+
         if N % 2 == 0:
             N1 = N / 2
             N2 = N1
@@ -102,9 +106,9 @@ class CahnHilliardSimulation(object):
         i_ = np.indices(X.shape[1:])
         ksq = np.sum(k[i_] ** 2, axis=0)[None]
 
-        axes = np.arange(len(X.shape) - 1) + 1
-        FX = np.fft.fftn(X, axes=axes)
-        FX3 = np.fft.fftn(X ** 3, axes=axes)
+        self._axes = np.arange(len(X.shape) - 1) + 1
+        FX = self._fftn(X)
+        FX3 = self._fftn(X ** 3)
 
         a1 = 3.
         a2 = 0.
@@ -113,5 +117,4 @@ class CahnHilliardSimulation(object):
         dt = self.dt
 
         Fy = (FX * (1 + dt * explicit) - ksq * dt * FX3) / (1 - dt * implicit)
-        self.response = np.fft.ifftn(Fy, axes=axes).real
-
+        self.response = self._ifftn(Fy).real

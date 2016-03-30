@@ -216,6 +216,7 @@ var/
 sdist/
 develop-eggs/
 .installed.cfg
+*.pkl
 
 # Installer logs
 pip-log.txt

@@ -1,5 +1,9 @@
-from .discrete import DiscreteIndicatorBasis
-from .continuous import ContinuousIndicatorBasis
+from .primitive import PrimitiveBasis
 from .legendre import LegendreBasis
+from .fourier import FourierBasis
+from .gsh import GSHBasis
 
-__all__ = ['DiscreteIndicatorBasis', 'ContinuousIndicatorBasis', 'LegendreBasis']
+__all__ = ['PrimitiveBasis', 'LegendreBasis', 'FourierBasis', 'GSHBasis']
+
+DiscreteIndicatorBasis = PrimitiveBasis
+ContinuousIndicatorBasis = PrimitiveBasis
