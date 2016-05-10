@@ -1,0 +1,12 @@
+*Heading
+********************************************************************************************
+** Random microstructure 3D 
+** 21 elements per edge
+** Contrast ratio 1.5
+** Periodic boundary conditions imposed on direction 1
+********************************************************************************************
+**
+*node,nset=alln,input=mesh3D_21node.txt
+**
+*element,elset=allel,input=mesh3D_21element.txt,TYPE=C3D8
+**------------------------------------------------------------------------------------------
