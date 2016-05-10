@@ -635,6 +635,34 @@ def _draw_components_3D(X, labels, title, component_labels, view_angles,
     plt.show()
 
 
+def _draw_goodness_of_fit(data, labels, legend_location=1):
+    """Goodness of fit plot for MKSHomogenizationModel.
+
+    Args:
+        fit_data (2D array): Low dimensional representation of the prediction
+            values of the data used to fit the model and the actual values.
+        pred_data (2D array): Low dimensional representation of the prediction
+            values of the data used for prediction with the model and the
+            actual values.
+    """
+    plt.close('all')
+    y_total = data[0]
+    y_min, y_max = np.min(y_total), np.max(y_total)
+    middle = (y_max + y_min) / 2.
+    data_range = y_max - y_min
+    line = np.linspace(middle - data_range * 1.03 / 2,
+                       middle + data_range * 1.03 / 2, endpoint=False)
+    plt.plot(line, line, '-', linewidth=3, color='#000000')
+    colors = _get_color_list(len(data))
+    for d, l, c in zip(data, labels, colors):
+        plt.plot(d[0], d[1], 'o', color=c, label=l)
+    plt.title('Goodness of Fit', fontsize=20)
+    plt.xlabel('Actual Modulus (GPa)', fontsize=18)
+    plt.ylabel('Predicted Modulus (GPa)', fontsize=18)
+    plt.legend(loc=legend_location, fontsize=15)
+    plt.show()
+
+
 def draw_goodness_of_fit(fit_data, pred_data, labels):
     """Goodness of fit plot for MKSHomogenizationModel.
 
