@@ -16,10 +16,10 @@ per_ch = None
 seed=10
 
 dataset = np.concatenate([make_microstructure(n_samples=samps,
-                              size=size, grain_size=grains, seed=seed, 
+                              size=size, grain_size=grains, seed=seed,
                                volume_fraction=v_f, percent_variance=per_ch)
                           for samps, grains, v_f in zip(n_samples, grain_size, v_frac)])
-
+print dataset.shape
 dataset_flattened = np.transpose(dataset, (1, 2, 3, 0)).astype(bool)
 mat_dict = {'data': dataset_flattened.reshape(-1, sum(n_samples))}
 savemat('data.mat', mat_dict)
