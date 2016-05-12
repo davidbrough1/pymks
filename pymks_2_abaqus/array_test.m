@@ -5,6 +5,8 @@ for i =1:10
     
     N(:,i*2,i,i) = 1;
 end
+N = permute(N,[2,3,4,1]);
+N = reshape(N,21*21*21,3);
 size(M)
 size(N)
 
