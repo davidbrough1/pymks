@@ -37,7 +37,7 @@ for ii=1:n_samples
     twopstatset(ii,M);
     matsets=fopen(['matset' int2str(ii) '.inp'],'r');
     materset=fread(matsets,inf);
-    combined=fopen([int2str(el) '_' int2str(ii) '_fibers.inp'],'w+');
+    combined=fopen(['input files\'  int2str(el) '_' int2str(ii) '_fibers.inp'],'w+');
     fwrite(combined,A);
     fprintf(combined,'\n');
     fwrite(combined,nodesetspbcx);
