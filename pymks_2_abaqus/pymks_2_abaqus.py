@@ -14,8 +14,11 @@ v_frac = [(0.8, 0.2), (0.7, 0.3), (0.6, 0.4), (0.5, 0.5), (0.3, 0.7), (0.4, 0.6)
 per_ch = 0.1
 seed=10
 
-
-dataset = np.concatenate([make_microstructure(n_samples=samps, size=size, grain_size=grains, seed=seed, volume_fraction=v_f, percent_variance=per_ch) for samps, grains, v_f in zip(n_samples, grain_size, v_frac)])
+dataset = []
+for v_f in v_frac:
+    _dataset = np.concatenate([make_microstructure(n_samples=samps, size=size, grain_size=grains, seed=seed, volume_fraction=v_f, percent_variance=per_ch) for samps, grains in zip(n_samples, grain_size)])
+    dataset.append(_dataset)
+dataset = np.concatenate(dataset)
 print dataset.shape
 
 # Creating continuous fibers
@@ -39,6 +42,6 @@ print con_stack.shape
 dataset = np.concatenate([dataset, con_stack], axis=0)
 print dataset.shape
 dataset_flattened = np.transpose(dataset, (1, 2, 3, 0)).astype(bool)
-print sum(n_samples), sum(n_samples, sample_size*6)
-mat_dict = {'data': dataset_flattened.reshape(-1, sum(n_samples) + sample_size*6)}
+print sum(n_samples*6), sum(n_samples, sample_size*6)
+mat_dict = {'data': dataset_flattened.reshape(-1, sum(n_samples*6) + sample_size*6)}
 savemat('data.mat', mat_dict)

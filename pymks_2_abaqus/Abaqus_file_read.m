@@ -1,6 +1,6 @@
 
-[rawdata] = importdata('DiagFib4.dat',' ',1e8);
-n = 21;
+[rawdata] = importdata('71_1_fibers.dat',' ',1e10);
+n = 71;
 % st = rawdata(272,1);
 % st2 = rawdata(74377,1);
 load('st1.mat')
@@ -19,6 +19,7 @@ while line <=size(rawdata,1)
     end
     
     if strcmp(st2,rawdata(line,1))
+        print 'found string 2'
         chars = char(rawdata(line+3:line+2+(n^3)*8,1));
         for j = 1:size(chars,1)
             S(j,:) = strsplit(chars(j,:));

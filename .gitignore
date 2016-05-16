@@ -250,3 +250,6 @@ misc
 #Sphinx
 doc/rst
 doc/_build
+pymks_2_abaqus/data.mat
+
+*.dat
