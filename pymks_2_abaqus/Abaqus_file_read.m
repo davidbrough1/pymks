@@ -1,5 +1,5 @@
 
-[rawdata] = importdata('71_1_fibers.dat',' ',1e10);
+[rawdata] = importdata('71_406_fibers.dat',' ',1e10);
 n = 71;
 % st = rawdata(272,1);
 % st2 = rawdata(74377,1);
@@ -11,6 +11,7 @@ line = 1;
 while line <=size(rawdata,1)
     
     if strcmp(st,rawdata(line,1))
+        st
         chars = char(rawdata(line+3:line+2+(n^3)*8,1));
         for j = 1:size(chars,1)
             E(j,:) = strsplit(chars(j,:));
