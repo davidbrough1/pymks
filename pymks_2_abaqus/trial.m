@@ -2,8 +2,8 @@ clear
 clc
 close all
 
-load('data.mat');
-M=data;
+load('data_y_z.mat');
+M=data_y_z;
 
 % M=zeros(el^3,3);
 % M(:,2)=ones(el^3,1);
@@ -37,7 +37,7 @@ for ii=1:n_samples
     twopstatset(ii,M);
     matsets=fopen(['matset' int2str(ii) '.inp'],'r');
     materset=fread(matsets,inf);
-    combined=fopen(['input files\'  int2str(el) '_' int2str(ii) '_fibers.inp'],'w+');
+    combined=fopen(['input files\'  int2str(el) '_' int2str(ii) '_Con_fibers.inp'],'w+');
     fwrite(combined,A);
     fprintf(combined,'\n');
     fwrite(combined,nodesetspbcx);

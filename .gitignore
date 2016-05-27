@@ -254,3 +254,4 @@ pymks_2_abaqus/data.mat
 
 *.dat
 *.inp
+*.mat

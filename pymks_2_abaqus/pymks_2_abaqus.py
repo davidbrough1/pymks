@@ -24,8 +24,9 @@ print dataset.shape
 # Creating continuous fibers
 con_stack = np.zeros((sample_size * 6, size[0], size[1], size[2]))
 
-sam = np.zeros(size)
-ran_slice = sam[1, :, :]
+
+sam_y = np.zeros(size)
+ran_slice = sam_y[1, :, :]
 for x in range(con_stack.shape[0]):
     for frac in range(30, 90, 10):
         #print "fraction", float(frac) / 100
@@ -34,14 +35,42 @@ for x in range(con_stack.shape[0]):
                                     (float(frac) / 100)])
         #print "Actual fraction", float(sum(sum(ran_slice))) / (size[1] * size[2])
         for i in range(size[0]):
-            sam[i, :, :] = ran_slice
-        con_stack[x, :, :, :] = sam
+            sam_y[i, :, :] = ran_slice
+        con_stack[x, :, :, :] = sam_y
+
+con_stack_y = np.zeros((sample_size * 6, size[0], size[1], size[2]))
+sam_y = np.zeros(size)
+ran_slice = sam_y[:, 1, :]
+for x in range(con_stack_y.shape[0]):
+    for frac in range(30, 90, 10):
+        # print "fraction", float(frac) / 100
+        ran_slice = np.random.choice((0, 1), size=(size[1], size[2]),
+                                 p=[1 - (float(frac) / 100),
+                                    (float(frac) / 100)])
+        # print "Actual fraction", float(sum(sum(ran_slice))) / (size[1] * size[2])
+        for i in range(size[0]):
+            sam_y[:, i, :] = ran_slice
+        con_stack_y[x, :, :, :] = sam_y
 
 
-print con_stack.shape
+con_stack_z = np.zeros((sample_size * 6, size[0], size[1], size[2]))
+sam_z = np.zeros(size)
+ran_slice = sam_z[:, 1, :]
+for x in range(con_stack_z.shape[0]):
+    for frac in range(30, 90, 10):
+        # print "fraction", float(frac) / 100
+        ran_slice = np.random.choice((0, 1), size=(size[1], size[2]),
+                                 p=[1 - (float(frac) / 100),
+                                    (float(frac) / 100)])
+        # print "Actual fraction", float(sum(sum(ran_slice))) / (size[1] * size[2])
+        for i in range(size[0]):
+            sam_z[:, :, i] = ran_slice
+        con_stack_z[x, :, :, :] = sam_z
+Con_y_z = np.concatenate([con_stack_y, con_stack_z], axis=0)
+print Con_y_z.shape
 dataset = np.concatenate([dataset, con_stack], axis=0)
 print dataset.shape
 dataset_flattened = np.transpose(dataset, (1, 2, 3, 0)).astype(bool)
-print sum(n_samples*6), sum(n_samples, sample_size*6)
-mat_dict = {'data': dataset_flattened.reshape(-1, sum(n_samples*6) + sample_size*6)}
-savemat('data.mat', mat_dict)
+con_flat = np.transpose(Con_y_z, (1, 2, 3, 0)).astype(bool)
+mat_dict = {'data_y_z': con_flat.reshape(-1, 120)}
+savemat('data_y_z.mat', mat_dict)

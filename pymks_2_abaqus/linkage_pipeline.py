@@ -1,3 +1,4 @@
+from pymks.tools import draw_components_scatter
 from sklearn.decomposition import KernelPCA
 from scipy.io import loadmat
 from sklearn.grid_search import GridSearchCV
@@ -48,7 +49,7 @@ for k in kernel_files[:2]:
 kernel = np.sum(np.concatenate(kernels), axis=0)
 
 pca_scores = reducer.fit_transform(kernel)
-
+draw_components_scatter([pca_scores[:, :3]], ['data'])
 fake_stiffness = np.random.random((len(kernel), 1))
 
 model = PipelineModel(n_components=3, degree=3)
@@ -57,5 +58,5 @@ gs = GridSearchCV(model, params_to_tune).fit(pca_scores, fake_stiffness)
 print('Order of Polynomial'), (gs.best_estimator_.degree)
 print('Number of Components'), (gs.best_estimator_.n_components)
 print('R-squared Value'), (gs.score(pca_scores, fake_stiffness))
- 
+
 model = gs.best_estimator_
