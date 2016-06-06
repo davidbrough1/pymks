@@ -360,11 +360,11 @@ def draw_gridscores(grid_scores, param, score_label=None, colors=None,
         tmp = [[params[param], mean_score, scores.std()]
                for params, mean_score, scores in grid_score]
         _param, errors, stddev = list(zip(*tmp))
-        _mins = np.array(errors) - np.array(stddev)
-        _maxes = np.array(errors) + np.array(stddev)
+        _mins = -np.array(errors) - np.array(stddev)
+        _maxes = -np.array(errors) + np.array(stddev)
         plt.fill_between(_param, _mins, _maxes, alpha=0.1,
                          color=color)
-        plt.plot(_param, errors, 'o-', color=color, label=data_label,
+        plt.plot(_param, -np.array(errors), 'o-', color=color, label=data_label,
                  linewidth=2)
         mins.append(min(_mins))
         maxes.append(max(_maxes))
@@ -445,6 +445,7 @@ def draw_component_variance(variance):
     plt.plot(x, np.cumsum(variance * 100), 'o-', color='#1a9641', linewidth=2)
     plt.xlabel('Number of Components', fontsize=15)
     plt.xlim(0, n_components + 1)
+    plt.ticklabel_format(useOffset=False, axis='y')
     plt.ylabel('Percent Variance', fontsize=15)
     plt.show()
 
@@ -639,6 +640,34 @@ def _draw_components_3D(X, labels, title, component_labels, view_angles,
     plt.show()
 
 
+def _draw_goodness_of_fit(data, labels, legend_location=1):
+    """Goodness of fit plot for MKSHomogenizationModel.
+
+    Args:
+        fit_data (2D array): Low dimensional representation of the prediction
+            values of the data used to fit the model and the actual values.
+        pred_data (2D array): Low dimensional representation of the prediction
+            values of the data used for prediction with the model and the
+            actual values.
+    """
+    plt.close('all')
+    y_total = data[0]
+    y_min, y_max = np.min(y_total), np.max(y_total)
+    middle = (y_max + y_min) / 2.
+    data_range = y_max - y_min
+    line = np.linspace(middle - data_range * 1.03 / 2,
+                       middle + data_range * 1.03 / 2, endpoint=False)
+    plt.plot(line, line, '-', linewidth=3, color='#000000')
+    colors = _get_color_list(len(data))
+    for d, l, c in zip(data, labels, colors):
+        plt.plot(d[0], d[1], 'o', color=c, label=l)
+    plt.title('Goodness of Fit', fontsize=20)
+    plt.xlabel('Actual Modulus (GPa)', fontsize=18)
+    plt.ylabel('Predicted Modulus (GPa)', fontsize=18)
+    plt.legend(loc=legend_location, fontsize=15)
+    plt.show()
+
+
 def draw_goodness_of_fit(fit_data, pred_data, labels):
     """Goodness of fit plot for MKSHomogenizationModel.
 
@@ -661,8 +690,8 @@ def draw_goodness_of_fit(fit_data, pred_data, labels):
     plt.plot(pred_data[0], pred_data[1], 'o',
              color='#f46d43', label=labels[1])
     plt.title('Goodness of Fit', fontsize=20)
-    plt.xlabel('Actual', fontsize=18)
-    plt.ylabel('Predicted', fontsize=18)
+    plt.xlabel('Actual Modulus (GPa)', fontsize=18)
+    plt.ylabel('Predicted Modulus (GPa)', fontsize=18)
     plt.legend(loc=2, fontsize=15)
     plt.show()
 
@@ -739,19 +768,19 @@ def _draw_stats(X_, correlations=None):
     n_plots = len(correlations)
     x_loc, x_labels = _get_ticks_params(X_.shape[0])
     y_loc, y_labels = _get_ticks_params(X_.shape[1])
-    fig, axs = plt.subplots(1, n_plots, figsize=(n_plots * 5, 5))
+    fig, axs = plt.subplots(2, 3, figsize=(n_plots * 5 / 2, 2 * 5))
     if n_plots == 1:
         axs = list([axs])
-    for ax, label, img in zip(axs, correlations, np.rollaxis(X_, -1)):
+    for ax, label, img in zip(axs.flatten(), correlations, np.rollaxis(X_, -1)):
         ax.grid(False)
         ax.set_xticks(x_loc)
-        ax.set_xticklabels(x_labels, fontsize=12)
+        ax.set_xticklabels(x_labels, fontsize=15)
         ax.set_yticks(y_loc)
-        ax.set_yticklabels(y_labels, fontsize=12)
+        ax.set_yticklabels(y_labels, fontsize=15)
         im = ax.imshow(img, cmap=X_cmap, interpolation='none')
-        ax.set_title(r"Correlation $l = {0}$, $l' = {1}$".format(label[0],
-                                                                 label[1]),
-                     fontsize=15)
+        # ax.set_title(r"Correlation $l = {0}$, $l' = {1}$".format(label[0],
+        #                                                          label[1]),
+        #              fontsize=15)
         fig.subplots_adjust(right=0.8)
         divider = make_axes_locatable(ax)
 
@@ -768,10 +797,10 @@ def _draw_stats(X_, correlations=None):
                                                      cbar_ticks[-1] + cbar_top,
                                                      cbar_ticks_diff *
                                                      cbar_grids))
-            cbar.ax.tick_params(labelsize=12)
+            cbar.ax.tick_params(labelsize=15)
         except:
             cbar = plt.colorbar(im, cax=cbar_ax, boundaries=np.unique(X_))
-        cbar.ax.tick_params(labelsize=12)
+        cbar.ax.tick_params(labelsize=15)
         fig.subplots_adjust(right=0.8)
         plt.tight_layout()
     plt.show()
